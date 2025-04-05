@@ -120,9 +120,6 @@ npm install
 npm run dev
 ```
 
- ### 📁 Project Structure
-
-src/ ├── components/ │ ├── LayerPanel/ │ ├── PropertiesPanel/ │ ├── TrainingPanel/ │ ├── TrainingChart.tsx │ ├── CodeModal.tsx │ └── ConsolePanel.tsx ├── hooks/ │ ├── useMobile.ts │ ├── useDraggable.ts ├── lib/ │ ├── tensorflow-utils.ts │ ├── code-generator.ts │ └── types.ts ├── pages/ │ └── index.tsx
 
 
 ## 👥 Contributors
