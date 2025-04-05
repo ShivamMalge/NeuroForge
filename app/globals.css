@@ -1,0 +1,157 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+
+    --radius: 0.5rem;
+
+    --chart-green: 142.1 76.2% 36.3%;
+    --chart-red: 346.8 77.2% 49.8%;
+    --chart-blue: 221.2 83.2% 53.3%;
+    --chart-yellow: 47.9 95.8% 53.1%;
+    --chart-purple: 262.1 83.3% 57.8%;
+    --chart-orange: 24.6 95% 53.1%;
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Animations */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .mobile-panel {
+    width: 100%;
+    height: calc(100vh - 64px - 48px);
+  }
+}
+
+/* Layer styling */
+.layer-card {
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.layer-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 0.5rem;
+  padding: 2px;
+  background: linear-gradient(to right, hsl(217.2 91.2% 59.8%), hsl(222.2 47.4% 11.2%));
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.layer-card:hover::before {
+  opacity: 1;
+}
+
+.layer-card.selected::before {
+  opacity: 1;
+  background: linear-gradient(to right, hsl(217.2 91.2% 59.8%), hsl(224.3 76.3% 48%));
+}
+
+/* Chart colors */
+.chart-green {
+  color: hsl(142.1 76.2% 36.3%);
+}
+.chart-red {
+  color: hsl(346.8 77.2% 49.8%);
+}
+.chart-blue {
+  color: hsl(221.2 83.2% 53.3%);
+}
+.chart-yellow {
+  color: hsl(47.9 95.8% 53.1%);
+}
+.chart-purple {
+  color: hsl(262.1 83.3% 57.8%);
+}
+.chart-orange {
+  color: hsl(24.6 95% 53.1%);
+}
+
+/* Add these styles to fix graph overflow issues */
+.recharts-wrapper {
+  max-height: 100%;
+  max-width: 100%;
+}
+
+.recharts-surface {
+  overflow: visible;
+}
+
+/* Ensure chart containers properly contain their content */
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Ensure the canvas stays within its container */
+.canvas-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Ensure the model visualization stays within bounds */
+.react-flow {
+  overflow: hidden !important;
+}
+
+.react-flow__renderer {
+  overflow: hidden !important;
+}
+
