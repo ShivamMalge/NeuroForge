@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { ArrowLeft, Brain, Code, LineChart, Github, Linkedin, Mail } from "lucide-react"
+import { ArrowLeft, Brain, Code, LineChart, Github, Linkedin, Instagram } from "lucide-react"
 import { Footer } from "@/components/footer"
 
 export const metadata: Metadata = {
@@ -116,7 +116,7 @@ export default function AboutPage() {
 
             <div className="flex flex-wrap gap-4 mt-4">
               <a
-                href="https://github.com"
+                href="https://github.com/ShivamMalge"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-secondary/50 hover:bg-secondary/70 transition-colors px-4 py-2 rounded-md text-sm"
@@ -125,7 +125,7 @@ export default function AboutPage() {
                 GitHub
               </a>
               <a
-                href="https://linkedin.com"
+                href="https://www.linkedin.com/in/shivam-malge-12523a293?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-secondary/50 hover:bg-secondary/70 transition-colors px-4 py-2 rounded-md text-sm"
@@ -134,11 +134,11 @@ export default function AboutPage() {
                 LinkedIn
               </a>
               <a
-                href="mailto:contact@example.com"
+                href="https://www.instagram.com/epsilon_edge?igsh=MTduNDFqdWd5NGlwMQ=="
                 className="inline-flex items-center gap-2 bg-secondary/50 hover:bg-secondary/70 transition-colors px-4 py-2 rounded-md text-sm"
               >
-                <Mail className="h-4 w-4" />
-                Email
+                <Instagram className="h-4 w-4" />
+                Instagram
               </a>
             </div>
           </section>
