@@ -3,17 +3,13 @@
 import * as tf from "@tensorflow/tfjs"
 
 export async function loadTensorflowJS() {
-  // Make sure TensorFlow.js is loaded
   await tf.ready()
   return tf
 }
 
-// Update the buildTensorflowModel function to ensure proper output shape
 export function buildTensorflowModel(layerConfigs: any[], modelConfig: any) {
-  // Create a sequential model
   const model = tf.sequential()
 
-  // Find the input layer to get its shape
   const inputLayer = layerConfigs.find((layer) => layer.type === "input")
   const inputShape = inputLayer?.params?.shape
 
@@ -21,20 +17,33 @@ export function buildTensorflowModel(layerConfigs: any[], modelConfig: any) {
     throw new Error("Model must have an input layer with a defined shape")
   }
 
-  // Track if we've added at least one layer
   let hasAddedLayer = false
 
-  // Add layers based on the configuration
   layerConfigs.forEach((layerConfig) => {
     let layer
 
-    // Skip the input layer as it's not an actual layer in TensorFlow.js
-    if (layerConfig.type === "input") {
-      return
-    }
+    if (layerConfig.type === "input") return
 
-    // For the first actual layer, we need to explicitly set the input shape
     const isFirstLayer = !hasAddedLayer
+
+    // 🛠 Reshape input for LSTM if necessary
+    if (
+      isFirstLayer &&
+      layerConfig.type === "lstm" &&
+      inputShape.length === 3 // e.g., [28, 28, 1]
+    ) {
+      const [h, w, c] = inputShape
+      const timeSteps = h
+      const features = w * (c || 1)
+
+      model.add(
+        tf.layers.reshape({
+          targetShape: [timeSteps, features],
+          inputShape: inputShape,
+        })
+      )
+      hasAddedLayer = true
+    }
 
     switch (layerConfig.type) {
       case "dense":
@@ -96,30 +105,26 @@ export function buildTensorflowModel(layerConfigs: any[], modelConfig: any) {
     }
   })
 
-  // Make sure we have at least one layer
   if (!hasAddedLayer) {
     throw new Error("Model must have at least one layer besides the input layer")
   }
 
-  // Check if the last layer is appropriate for the task
   const lastLayer = layerConfigs[layerConfigs.length - 1]
   const isClassification = modelConfig.loss.includes("Crossentropy")
 
-  // For classification tasks, the last layer should be a Dense layer with appropriate units
   if (
     isClassification &&
     (lastLayer.type !== "dense" ||
       (modelConfig.dataset === "mnist" && lastLayer.params.units !== 10) ||
       (modelConfig.dataset === "xor" && lastLayer.params.units !== 1))
   ) {
-    // Add appropriate output layer based on the dataset
     if (modelConfig.dataset === "mnist") {
       model.add(
         tf.layers.dense({
           units: 10,
           activation: "softmax",
           name: "output_layer",
-        }),
+        })
       )
     } else if (modelConfig.dataset === "xor") {
       model.add(
@@ -127,12 +132,11 @@ export function buildTensorflowModel(layerConfigs: any[], modelConfig: any) {
           units: 1,
           activation: "sigmoid",
           name: "output_layer",
-        }),
+        })
       )
     }
   }
 
-  // Compile the model
   model.compile({
     optimizer: modelConfig.optimizer,
     loss: modelConfig.loss,
@@ -149,13 +153,12 @@ export async function trainModel(
   modelConfig: any,
   onEpochEnd: (epoch: number, logs: any) => void,
 ) {
-  // Train the model
   await model.fit(trainData.xs, trainData.ys, {
     epochs: modelConfig.epochs,
     batchSize: modelConfig.batchSize,
     validationData: [testData.xs, testData.ys],
     callbacks: {
-      onEpochEnd: onEpochEnd,
+      onEpochEnd,
     },
   })
 
@@ -163,7 +166,6 @@ export async function trainModel(
 }
 
 export function getXORData() {
-  // XOR data
   const xTrain = tf.tensor2d([
     [0, 0],
     [0, 1],
@@ -172,39 +174,29 @@ export function getXORData() {
   ])
   const yTrain = tf.tensor2d([[0], [1], [1], [0]])
 
-  // Use the same data for testing in this simple example
   const xTest = xTrain
   const yTest = yTrain
 
   return { xTrain, yTrain, xTest, yTest }
 }
 
-// Generate mock MNIST data for demo purposes
 export async function getMNISTData() {
   try {
-    // For the demo, we'll just use the mock data
-    // In a real app, you would try to load the actual MNIST dataset here
     return generateMockMNISTData()
   } catch (error) {
     console.error("Error loading MNIST dataset:", error)
-    // Fallback to mock data
     return generateMockMNISTData()
   }
 }
 
-// Generate mock MNIST data for demo purposes
 function generateMockMNISTData() {
-  // Create small mock dataset
   const numTrainSamples = 100
   const numTestSamples = 20
   const numClasses = 10
 
-  // Create flat arrays for images (simpler approach to avoid tensor4d formatting issues)
-  // Each image is 28x28x1 = 784 values
   const flatXTrainData = new Float32Array(numTrainSamples * 28 * 28 * 1)
   const flatXTestData = new Float32Array(numTestSamples * 28 * 28 * 1)
 
-  // Fill with random values between 0 and 1
   for (let i = 0; i < flatXTrainData.length; i++) {
     flatXTrainData[i] = Math.random()
   }
@@ -213,11 +205,9 @@ function generateMockMNISTData() {
     flatXTestData[i] = Math.random()
   }
 
-  // Generate random one-hot encoded labels
   const yTrainData = new Float32Array(numTrainSamples * numClasses)
   const yTestData = new Float32Array(numTestSamples * numClasses)
 
-  // Set one-hot encoded values
   for (let i = 0; i < numTrainSamples; i++) {
     const label = Math.floor(Math.random() * numClasses)
     yTrainData[i * numClasses + label] = 1
@@ -228,7 +218,6 @@ function generateMockMNISTData() {
     yTestData[i * numClasses + label] = 1
   }
 
-  // Create tensors with proper shapes
   const xTrain = tf.tensor4d(flatXTrainData, [numTrainSamples, 28, 28, 1])
   const yTrain = tf.tensor2d(yTrainData, [numTrainSamples, numClasses])
   const xTest = tf.tensor4d(flatXTestData, [numTestSamples, 28, 28, 1])
@@ -236,4 +225,3 @@ function generateMockMNISTData() {
 
   return { xTrain, yTrain, xTest, yTest }
 }
-
