@@ -8,7 +8,7 @@
 
 ## 🌐 Live Demo
 
-👉 [Try it out now](https://your-demo-link.com)
+👉 [Try it out now](https://neuro-forge.vercel.app/)
 
 ---
 
